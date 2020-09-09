@@ -10,9 +10,9 @@ n_per = 10;
 REPEAT = 10;
 ACC = [];
 
-param.alpha = .01;  
-param.beta= .1;
-param.gamma = .01;
+param.lambda1 = .01;
+param.lambda2 = .01;  
+param.lambda3 = .1;
 param.dim = class;
 opts.mu = 1;
 opts.rho = 1.1;
