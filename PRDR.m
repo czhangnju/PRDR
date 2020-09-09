@@ -1,12 +1,9 @@
 function [W] = PRDR(X, label, param, opts)
 
-% min_{W,V, U} 0.5*||V-WX||_F^2 + alpha/2* ||V'*U-Y'*Y||_F^2 + beta/2*
-% Tr(WXLX'W') + gamma/2*||W||_F^2
-% s.t. ||V_i||=1, V = U
-%
-alpha = param.alpha; 
-beta = param.beta;
-gamma = param.gamma;
+lambda1 = param.lambda1;
+lambda2 = param.lambda2; 
+lambda3 = param.lambda3 ;
+
 dim = param.dim;
 n = length(label);
 mu = opts.mu;
@@ -28,18 +25,18 @@ XX = X*X';
 
 L = Construct_L(X',label);
 P = X*L*X';
-H = X'*inv(XX + beta*P + gamma*eye(size(X,1)));
+H = X'*inv(XX + lambda3*P + lambda1*eye(size(X,1)));
 
 for iter=1:Max_Iter
     % update V
-    VA = alpha*(U*U')+ (1+mu)*eye(size(U,1));
-    VB = W*X  + alpha*U*YY + mu*U - Z;
+    VA = lambda2*(U*U')+ (1+mu)*eye(size(U,1));
+    VB = W*X  + lambda2*U*YY + mu*U - Z;
     V = VA\VB;
     V = (V./repmat(sqrt(sum(V.*V)),[size(V, 1) 1]));
 
     % update U
-    UA = alpha*(V*V') + mu* eye(size(V,1));
-    UB = alpha*V*YY + mu*V+Z;
+    UA = lambda2*(V*V') + mu* eye(size(V,1));
+    UB = lambda2*V*YY + mu*V+Z;
     U = UA\UB;
     
     % update W
@@ -49,7 +46,7 @@ for iter=1:Max_Iter
     Z = Z+mu*(V-U);
     mu= min(mu_max, rho*mu);
     
-    obj(iter) = 0.5*norm(V-W*X, 'fro')^2 + alpha/2*norm(V'*U-YY, 'fro')^2 + beta/2*trace(W*P*W') +gamma/2*norm(W,'fro')^2  ;
+    obj(iter) = 0.5*norm(V-W*X, 'fro')^2 + lambda2/2*norm(V'*U-YY, 'fro')^2 + lambda3/2*trace(W*P*W') +lambda1/2*norm(W,'fro')^2  ;
     
     if iter>3 && abs(obj(iter) - obj(iter-1)) < epsilon
         break;
