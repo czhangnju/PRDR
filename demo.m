@@ -10,7 +10,7 @@ n_per = 10;
 REPEAT = 10;
 ACC = [];
 
-param.lambda1 = .05;
+param.lambda1 = .01;
 param.lambda2 = .01;  
 param.lambda3 = .1;
 param.dim = class;
